@@ -1,66 +1,166 @@
-// ===== 1. API KEY (Safe: browser లో మాతమ్ర ే) =====
-let API_KEY = localStorage.getItem('jarvis_key');
-if(!API_KEY){
-API_KEY = prompt('Enter your Gemini API Key:');
-if(API_KEY) localStorage.setItem('jarvis_key', API_KEY);
+
+// =================================
+// JARVIS MOBILE AI ASSISTANT
+// =================================
+
+const commandInput = document.getElementById("command");
+const response = document.getElementById("response");
+const status = document.getElementById("status");
+
+// JARVIS VOICE RESPONSE
+function speak(text) {
+    if (!("speechSynthesis" in window)) {
+        response.innerText = text;
+        return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const speech = new SpeechSynthesisUtterance(text);
+    speech.lang = "en-IN";
+    speech.rate = 1;
+    speech.pitch = 1;
+
+    window.speechSynthesis.speak(speech);
 }
-// ===== 2. SMART MODELS (ఒకటిfail అయితేnext auto try) =====
-const MODELS = ["gemini-3.6-flash", "gemini-flash-latest"];
-const chat=document.getElementById('chat');
-const input=document.getElementById('msg');
-const micBtn=document.getElementById('mic-btn');
-// ===== 3. GEMINI BRAIN (auto-fallback) =====
-async function callGemini(p){ let lastErr;
-for(const m of MODELS){
-try{
-const res=await fetch(
-"https://generativelanguage.googleapis.com/v1beta/models/"+m+":generateContent?key="
-+API_KEY,
-{method:"POST",headers:{"Content-Type":"application/json"},
-body:JSON.stringify({contents:[{parts:[{text:p}]}]})});
-const data=await res.json();
-if(data.error){
-lastErr=new Error(data.error.message);
-if(/high demand|temporar|quota|rate|unavailable|no longer
-available|deprecated/i.test(data.error.message)) continue;
-throw lastErr;
+
+// DISPLAY RESPONSE
+function showResponse(text) {
+    response.innerText = text;
+    speak(text);
 }
-return data.candidates[0].content.parts[0].text;
-}catch(e){ lastErr=e; }
+
+// PROCESS COMMANDS
+function runCommand() {
+
+    const cmd = commandInput.value.toLowerCase().trim();
+
+    if (!cmd) {
+        showResponse("Please enter a command, Sir.");
+        return;
+    }
+
+    let answer = "";
+
+    if (cmd.includes("hello") || cmd.includes("hi")) {
+        answer = "Hello Sir! I am Jarvis. How can I help you?";
+    }
+
+    else if (cmd.includes("your name")) {
+        answer = "My name is Jarvis, your personal AI assistant.";
+    }
+
+    else if (cmd.includes("how are you")) {
+        answer = "I am doing great, Sir. Always ready to help you.";
+    }
+
+    else if (cmd.includes("time")) {
+        answer = "The current time is " +
+            new Date().toLocaleTimeString();
+    }
+
+    else if (cmd.includes("date")) {
+        answer = "Today's date is " +
+            new Date().toLocaleDateString();
+    }
+
+    else if (cmd.includes("open google")) {
+        answer = "Opening Google, Sir.";
+        showResponse(answer);
+        window.open("https://www.google.com", "_blank");
+        return;
+    }
+
+    else if (cmd.includes("open youtube")) {
+        answer = "Opening YouTube, Sir.";
+        showResponse(answer);
+        window.open("https://www.youtube.com", "_blank");
+        return;
+    }
+
+    else if (cmd.startsWith("search ")) {
+        const query = cmd.replace("search ", "");
+        answer = "Searching Google for " + query;
+        showResponse(answer);
+
+        window.open(
+            "https://www.google.com/search?q=" +
+            encodeURIComponent(query),
+            "_blank"
+        );
+        return;
+    }
+
+    else if (cmd.includes("stop speaking")) {
+        window.speechSynthesis.cancel();
+        response.innerText = "Voice stopped, Sir.";
+        return;
+    }
+
+    else if (cmd.includes("thank you")) {
+        answer = "You are welcome, Sir.";
+    }
+
+    else {
+        answer = "Sorry Sir, I don't understand that command.";
+    }
+
+    showResponse(answer);
 }
-throw lastErr;
+
+// MOBILE VOICE RECOGNITION
+function startListening() {
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+        showResponse(
+            "Voice recognition is not supported. Please use Chrome on Android."
+        );
+        return;
+    }
+
+    const recognition = new SpeechRecognition();
+
+    recognition.lang = "en-IN";
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    status.innerText = "● LISTENING...";
+
+    recognition.onresult = function(event) {
+
+        const voiceText =
+            event.results[0][0].transcript;
+
+        commandInput.value = voiceText;
+
+        runCommand();
+    };
+
+    recognition.onerror = function(event) {
+        response.innerText =
+            "Microphone error: " + event.error;
+    };
+
+    recognition.onend = function() {
+        status.innerText = "● SYSTEM ONLINE";
+    };
+
+    try {
+        recognition.start();
+    } catch (error) {
+        response.innerText = "Please try again.";
+    }
 }
-async function askGemini(p){
-add('J.A.R.V.I.S: Thinking...','ai');
-try{
-const reply=await callGemini(p);
-chat.lastChild.innerText='J.A.R.V.I.S: '+reply;
-speak(reply); // reply వచ్చి న వెంటనేVOICE
-}catch(e){
-chat.lastChild.innerText='J.A.R.V.I.S: ERROR - '+e.message;
-}
-}
-// ===== 4. SPEECH RECOGNITION (వినడం) =====
-const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-const rec=new SR(); rec.lang='en-US'; // Telugu కి'te-IN'
-rec.onresult=(e)=>{const t=e.results[0][0].transcript;add('YOU: '+t,'user');askGemini(t);};
-micBtn.onclick=()=>{rec.start();micBtn.innerText='LISTENING...';};
-rec.onend=()=>{micBtn.innerText='🎙️';};
-// ===== 5. TEXT-TO-SPEECH (మాట్లాడటం) =====
-let voices=[];
-function loadVoices(){ voices=speechSynthesis.getVoices(); }
-loadVoices();
-speechSynthesis.onvoiceschanged=loadVoices;
-function speak(t){
-const u=new SpeechSynthesisUtterance(t); u.rate=1.05; u.pitch=0.85;
-const v=voices.find(v=>v.lang.startsWith('en'));
-if(v) u.voice=v;
-speechSynthesis.speak(u);
-}
-// ===== 6. TEXT SEND BUTTON =====
-document.getElementById('send').onclick=()=>{
-const t=input.value.trim(); if(!t)return;
-add('YOU: '+t,'user'); input.value=''; askGemini(t);
-};
-function add(t,w){const d=document.createElement('div');d.className='msg
-'+w;d.innerText=t;chat.appendChild(d);chat.scrollTop=chat.scrollHeight;}
+
+// ENTER BUTTON SUPPORT
+commandInput.addEventListener("keydown", function(event) {
+    if (event.key === "Enter") {
+        runCommand();
+    }
+});
+
+console.log("JARVIS MOBILE SYSTEM INITIALIZED");
