@@ -1,84 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>J.A.R.V.I.S Mobile Edition</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>J.A.R.V.I.S</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-  <header>
-    <h1>J.A.R.V.I.S</h1>
-    <p>PERSONAL AI ASSISTANT</p>
-  </header>
-
-  <main>
-    <div class="core">
-      <div class="ring r1"></div>
-      <div class="ring r2"></div>
-      <div class="ring r3"></div>
-      <div class="center">J</div>
-    </div>
-
-    <p class="core-text" id="system-status">
-      SYSTEM READY
-    </p>
-
-    <section class="status">
-      <h2>SYSTEM DIAGNOSTICS</h2>
-
-      <div class="row">
-        <span>AI ENGINE</span>
-        <b>● READY</b>
-      </div>
-
-      <div class="row">
-        <span>CONNECTION</span>
-        <b>● ONLINE</b>
-      </div>
-
-      <div class="row">
-        <span>VOICE INTERFACE</span>
-        <b>● READY</b>
-      </div>
-
-      <div class="row">
-        <span>MEMORY</span>
-        <b>● ACTIVE</b>
-      </div>
-    </section>
-
-    <section class="chat" id="chat">
-      <div class="bot-message">
-        J.A.R.V.I.S: Good evening, Sir. How may I assist you?
-      </div>
-    </section>
-
-    <div class="input-area">
-      <input
-        type="text"
-        id="msg"
-        placeholder="Enter your command..."
-      >
-
-      <button id="send">SEND</button>
-
-      <button id="mic-btn" aria-label="Voice input">🎙️</button>
-
-      <button id="cam-btn" aria-label="Upload image">📷</button>
-
-      <input
-        type="file"
-        id="img-input"
-        accept="image/*"
-        hidden
-      >
-
-      <button id="clear-btn">CLEAR CHAT</button>
-    </div>
-  </main>
-
-  <script src="script.js"></script>
+ <header><h1>J.A.R.V.I.S</h1><p>MOBILE EDITION</p></header>
+ <div class="core">
+ <div class="ring r1"></div>
+ <div class="ring r2"></div>
+ <div class="center"></div>
+ </div>
+ <p class="core-text">CORE ACTIVE</p>
+ <div class="status">
+ <h2>SYSTEM STATUS</h2>
+ <div class="row"><span>AI CORE</span><b class="on">● ONLINE</b></div>
+ <div class="row"><span>NETWORK</span><b class="on">● ONLINE</b></div>
+ <div class="row"><span>VOICE</span><b class="off">○ LOCKED</b></div>
+ <div class="row"><span>MEMORY</span><b class="off">○ LOCKED</b></div>
+ </div>
+ <div class="chat" id="chat"></div>
+ <div class="input-area">
+ <input id="msg" placeholder="Ask J.A.R.V.I.S...">
+ <button id="send">SEND</button>
+ </div>
+ <script src="script.js"></script>
 </body>
 </html>
