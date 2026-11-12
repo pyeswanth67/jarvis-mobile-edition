@@ -1,224 +1,27 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap');
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Orbitron', sans-serif;
-}
-
-body {
-  background: #020609;
-  color: #00ffff;
-  min-height: 100vh;
-  padding: 18px;
-  overflow-x: hidden;
-}
-
-header {
-  text-align: center;
-  margin: 15px 0 25px;
-}
-
-header h1 {
-  font-size: 32px;
-  letter-spacing: 6px;
-  text-shadow: 0 0 15px #00ffff;
-}
-
-header p {
-  font-size: 10px;
-  letter-spacing: 4px;
-  margin-top: 8px;
-  color: #80ffff;
-}
-
-.core {
-  width: 190px;
-  height: 190px;
-  margin: 25px auto;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.ring {
-  position: absolute;
-  border: 2px solid #00ffff;
-  border-radius: 50%;
-  box-shadow: 0 0 15px #00ffff;
-}
-
-.r1 {
-  width: 190px;
-  height: 190px;
-  border-left-color: transparent;
-  animation: rotate 5s linear infinite;
-}
-
-.r2 {
-  width: 150px;
-  height: 150px;
-  border-right-color: transparent;
-  animation: rotate 3s linear infinite reverse;
-}
-
-.r3 {
-  width: 110px;
-  height: 110px;
-  border-top-color: transparent;
-  animation: rotate 2s linear infinite;
-}
-
-.center {
-  width: 75px;
-  height: 75px;
-  border-radius: 50%;
-  background: radial-gradient(circle, #00ffff, #006b85);
-  color: #001015;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 35px;
-  font-weight: 900;
-  box-shadow: 0 0 30px #00ffff;
-}
-
-@keyframes rotate {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.core-text {
-  text-align: center;
-  font-size: 12px;
-  letter-spacing: 3px;
-  margin: 20px 0;
-  animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-  50% { opacity: 0.4; }
-}
-
-.status {
-  border: 1px solid #007e8c;
-  border-radius: 12px;
-  padding: 15px;
-  background: rgba(0, 255, 255, 0.04);
-  box-shadow: 0 0 12px rgba(0,255,255,0.15);
-}
-
-.status h2 {
-  font-size: 13px;
-  margin-bottom: 15px;
-  letter-spacing: 2px;
-}
-
-.row {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  font-size: 10px;
-  padding: 11px 0;
-  border-bottom: 1px solid #123c42;
-}
-
-.row:last-child {
-  border-bottom: none;
-}
-
-.row b {
-  color: #00ff88;
-  font-size: 9px;
-}
-
-.chat {
-  height: 220px;
-  overflow-y: auto;
-  border: 1px solid #007e8c;
-  border-radius: 12px;
-  margin-top: 20px;
-  padding: 12px;
-  background: #041116;
-}
-
-.bot-message,
-.user-message {
-  padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 8px;
-  font-size: 11px;
-  line-height: 1.7;
-  overflow-wrap: anywhere;
-}
-
-.bot-message {
-  color: #00ffff;
-  background: #09252b;
-}
-
-.user-message {
-  color: white;
-  background: #064c58;
-  text-align: right;
-}
-
-.input-area {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 15px;
-}
-
-#msg {
-  flex: 1 1 100%;
-  min-width: 0;
-  padding: 14px;
-  background: #06151a;
-  border: 1px solid #00ffff;
-  border-radius: 8px;
-  color: white;
-  outline: none;
-  font-size: 12px;
-}
-
-button {
-  padding: 12px;
-  border: 1px solid #00ffff;
-  background: #06232a;
-  color: #00ffff;
-  border-radius: 8px;
-  font-size: 10px;
-  cursor: pointer;
-}
-
-button:active {
-  background: #00ffff;
-  color: black;
-}
-
-#send {
-  flex: 1;
-}
-
-#clear-btn {
-  flex: 1 1 100%;
-}
-
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-@media (max-width: 380px) {
-  header h1 {
-    font-size: 26px;
-  }
-
-  .row {
-    font-size: 9px;
-  }
-}
+@import url('https://fonts.googleapis.com/css2?
+family=Orbitron:wght@400;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Orbitron'}
+body{background:#000;color:#0ff;padding:20px}
+header{text-align:center}
+header h1{letter-spacing:6px;text-shadow:0 0 12px #0ff}
+header p{font-size:10px;letter-spacing:4px;opacity:.6}
+.core{position:relative;width:160px;height:160px;margin:25px auto}
+.ring{position:absolute;border:2px solid #0ff;border-radius:50%;box-shadow:0 0 15px #0ff}
+.r1{inset:0;border-top-color:transparent;animation:spin 3s linear infinite}
+.r2{inset:20px;border-bottom-color:transparent;animation:spin 2s linear infinite reverse}
+.center{position:absolute;inset:50px;background:#0ff;border-radius:50%;box-shadow:0 0 
+30px #0ff;animation:pulse 1.5s infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{50%{opacity:.4}}
+.core-text{text-align:center;font-size:11px;letter-spacing:3px}
+.status{border:1px solid rgba(0,255,255,.3);background:rgba(0,255,255,.05);padding:
+12px;margin:20px 0}
+.status h2{font-size:12px;letter-spacing:2px;margin-bottom:8px}
+.row{display:flex;justify-content:space-between;font-size:11px;margin:6px 0}
+.on{color:#0f0}.off{color:#f00}
+.chat{border:1px solid rgba(0,255,255,.3);height:150px;overflow-y:auto;padding:10px;fontsize:12px}
+.msg{margin:6px 0;padding:6px;border-left:2px solid #0ff;background:rgba(0,255,255,.08)}
+.msg.user{border-left-color:#fff}
+.input-area{display:flex;gap:8px;margin-top:12px}
+input{flex:1;background:#000;border:1px solid #0ff;color:#0ff;padding:10px}
+button{background:#0ff;color:#000;border:none;padding:10px 16px;font-weight:bold}
