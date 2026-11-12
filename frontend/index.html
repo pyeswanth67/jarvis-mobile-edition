@@ -1,32 +1,196 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>J.A.R.V.I.S</title>
-<link rel="stylesheet" href="style.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JARVIS AI Assistant</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: #050b16;
+  color: #00eaff;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+h1 {
+  letter-spacing: 5px;
+  text-shadow: 0 0 15px #00eaff;
+}
+.circle {
+  width: 190px;
+  height: 190px;
+  border: 4px solid #00eaff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 55px;
+  margin: 25px;
+  box-shadow: 0 0 30px #00eaff,
+              inset 0 0 25px #00eaff;
+  animation: glow 2s infinite alternate;
+}
+@keyframes glow {
+  from { box-shadow: 0 0 10px #00eaff; }
+  to { box-shadow: 0 0 40px #00eaff; }
+}
+input {
+  width: 75%;
+  max-width: 350px;
+  padding: 14px;
+  border-radius: 25px;
+  border: 1px solid #00eaff;
+  background: #101d2c;
+  color: white;
+  outline: none;
+}
+button {
+  padding: 12px 22px;
+  margin: 10px 5px;
+  border: none;
+  border-radius: 25px;
+  background: #00eaff;
+  color: #001018;
+  font-weight: bold;
+  cursor: pointer;
+}
+button:hover {
+  background: white;
+}
+#response {
+  color: white;
+  margin: 20px;
+  max-width: 90%;
+}
+</style>
 </head>
+
 <body>
- <header><h1>J.A.R.V.I.S</h1><p>MOBILE EDITION</p></header>
- <div class="core">
- <div class="ring r1"></div>
- <div class="ring r2"></div>
- <div class="center"></div>
- </div>
- <p class="core-text">CORE ACTIVE</p>
- <div class="status">
- <h2>SYSTEM STATUS</h2>
- <div class="row"><span>AI CORE</span><b class="on">● ONLINE</b></div>
- <div class="row"><span>NETWORK</span><b class="on">● ONLINE</b></div>
- <div class="row"><span>VOICE</span><b class="off">○ LOCKED</b></div>
- <div class="row"><span>MEMORY</span><b class="off">○ LOCKED</b></div>
- </div>
- <div class="chat" id="chat"></div>
- <div class="input-area">
- <input id="msg" placeholder="Ask J.A.R.V.I.S...">
- <button id="send">SEND</button>
-<button id="mic-btn">🎤</button>
- </div>
- <script src="script.js"></script>
+
+<h1>J.A.R.V.I.S</h1>
+<p>YOUR PERSONAL AI ASSISTANT</p>
+
+<div class="circle">◉</div>
+
+<p id="status">SYSTEM ONLINE</p>
+
+<input type="text" id="command"
+placeholder="Type your command here...">
+
+<br>
+
+<button onclick="runCommand()">ASK JARVIS</button>
+<button onclick="startListening()">🎤 SPEAK</button>
+
+<div id="response">Hello! I am Jarvis. How can I help you?</div>
+
+<script>
+const response = document.getElementById("response");
+
+function speak(text) {
+  speechSynthesis.cancel();
+  let speech = new SpeechSynthesisUtterance(text);
+  speech.lang = "en-IN";
+  speech.rate = 1;
+  speechSynthesis.speak(speech);
+}
+
+function runCommand() {
+  let command = document.getElementById("command")
+    .value.toLowerCase().trim();
+
+  let answer = "";
+
+  if (command.includes("hello") || command.includes("hi")) {
+    answer = "Hello sir! I am Jarvis. How can I help you?";
+  }
+  else if (command.includes("your name")) {
+    answer = "My name is Jarvis, your personal assistant.";
+  }
+  else if (command.includes("time")) {
+    answer = "The current time is " +
+      new Date().toLocaleTimeString();
+  }
+  else if (command.includes("date")) {
+    answer = "Today's date is " +
+      new Date().toLocaleDateString();
+  }
+  else if (command.includes("open google")) {
+    answer = "Opening Google";
+    window.open("https://www.google.com", "_blank");
+  }
+  else if (command.includes("open youtube")) {
+    answer = "Opening YouTube";
+    window.open("https://www.youtube.com", "_blank");
+  }
+  else if (command.includes("search")) {
+    let query = command.replace("search", "").trim();
+    answer = "Searching Google for " + query;
+    window.open(
+      "https://www.google.com/search?q=" +
+      encodeURIComponent(query), "_blank"
+    );
+  }
+  else if (command.includes("how are you")) {
+    answer = "I am doing great, sir. Thank you!";
+  }
+  else if (command.includes("stop")) {
+    speechSynthesis.cancel();
+    answer = "Voice stopped.";
+  }
+  else {
+    answer = "Sorry sir, I don't know that command yet.";
+  }
+
+  response.innerText = answer;
+  speak(answer);
+}
+
+function startListening() {
+  const SpeechRecognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    response.innerText =
+      "Speech recognition is not supported in this browser.";
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = "en-IN";
+  recognition.start();
+
+  document.getElementById("status").innerText =
+    "LISTENING...";
+
+  recognition.onresult = function(event) {
+    let text = event.results[0][0].transcript;
+    document.getElementById("command").value = text;
+    runCommand();
+  };
+
+  recognition.onerror = function() {
+    document.getElementById("status").innerText =
+      "VOICE ERROR";
+  };
+
+  recognition.onend = function() {
+    document.getElementById("status").innerText =
+      "SYSTEM ONLINE";
+  };
+}
+</script>
+
 </body>
 </html>
