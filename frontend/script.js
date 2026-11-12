@@ -1,165 +1,326 @@
-// =================================
-// JARVIS MOBILE AI ASSISTANT
-// =================================
+// ========================================
+// J.A.R.V.I.S MOBILE EDITION
+// Gemini AI + Voice Assistant
+// ========================================
 
-const commandInput = document.getElementById("command");
-const response = document.getElementById("response");
-const status = document.getElementById("status");
+// 1. GEMINI API CONFIGURATION
 
-// JARVIS VOICE RESPONSE
-function speak(text) {
-    if (!("speechSynthesis" in window)) {
-        response.innerText = text;
-        return;
+let API_KEY = localStorage.getItem("jarvis_key");
+
+if (!API_KEY) {
+    API_KEY = prompt("Enter your Gemini API Key:");
+
+    if (API_KEY) {
+        localStorage.setItem("jarvis_key", API_KEY.trim());
+        API_KEY = API_KEY.trim();
     }
-
-    window.speechSynthesis.cancel();
-
-    const speech = new SpeechSynthesisUtterance(text);
-    speech.lang = "en-IN";
-    speech.rate = 1;
-    speech.pitch = 1;
-
-    window.speechSynthesis.speak(speech);
 }
 
-// DISPLAY RESPONSE
-function showResponse(text) {
-    response.innerText = text;
-    speak(text);
+// Use currently supported model IDs
+const MODELS = [
+    "gemini-3.8-flash",
+    "gemini-3.6-flash",
+    "gemini-3.5-flash-lite"
+];
+
+// 2. HTML ELEMENTS
+
+const chat = document.getElementById("chat");
+const input = document.getElementById("msg");
+const sendBtn = document.getElementById("send");
+const voiceBtn = document.getElementById("voiceBtn");
+
+let isLoading = false;
+
+// 3. CHAT MESSAGE FUNCTION
+
+function add(message, type) {
+    const div = document.createElement("div");
+
+    div.className = "msg " + type;
+    div.innerText = message;
+
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+
+    return div;
 }
 
-// PROCESS COMMANDS
-function runCommand() {
+// 4. GEMINI AI CONNECTION
 
-    const cmd = commandInput.value.toLowerCase().trim();
+async function callGemini(promptText) {
 
-    if (!cmd) {
-        showResponse("Please enter a command, Sir.");
-        return;
+    if (!API_KEY) {
+        throw new Error("API KEY NOT FOUND");
     }
 
-    let answer = "";
+    let lastError;
 
-    if (cmd.includes("hello") || cmd.includes("hi")) {
-        answer = "Hello Sir! I am Jarvis. How can I help you?";
+    for (const model of MODELS) {
+
+        try {
+
+            const response = await fetch(
+                `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(API_KEY)}`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        systemInstruction: {
+                            parts: [{
+                                text: "You are J.A.R.V.I.S, a friendly and intelligent mobile AI assistant. Respond clearly, helpfully and naturally. Call the user sir when appropriate."
+                            }]
+                        },
+
+                        contents: [{
+                            role: "user",
+                            parts: [{
+                                text: promptText
+                            }]
+                        }],
+
+                        generationConfig: {
+                            temperature: 0.7,
+                            maxOutputTokens: 2048
+                        }
+                    })
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+
+                const message =
+                    data.error?.message || "Gemini API error";
+
+                lastError = new Error(message);
+
+                // Try another model for model availability errors
+                if (
+                    response.status === 404 ||
+                    response.status === 429 ||
+                    response.status >= 500
+                ) {
+                    continue;
+                }
+
+                throw lastError;
+            }
+
+            const answer =
+                data.candidates?.[0]?.content?.parts
+                    ?.map(part => part.text || "")
+                    .join("")
+                    .trim();
+
+            if (!answer) {
+                throw new Error("Empty AI response");
+            }
+
+            return answer;
+
+        } catch (error) {
+
+            lastError = error;
+
+            if (
+                error.message === "Failed to fetch" ||
+                error.name === "TypeError"
+            ) {
+                throw error;
+            }
+        }
     }
 
-    else if (cmd.includes("your name")) {
-        answer = "My name is Jarvis, your personal AI assistant.";
-    }
-
-    else if (cmd.includes("how are you")) {
-        answer = "I am doing great, Sir. Always ready to help you.";
-    }
-
-    else if (cmd.includes("time")) {
-        answer = "The current time is " +
-            new Date().toLocaleTimeString();
-    }
-
-    else if (cmd.includes("date")) {
-        answer = "Today's date is " +
-            new Date().toLocaleDateString();
-    }
-
-    else if (cmd.includes("open google")) {
-        answer = "Opening Google, Sir.";
-        showResponse(answer);
-        window.open("https://www.google.com", "_blank");
-        return;
-    }
-
-    else if (cmd.includes("open youtube")) {
-        answer = "Opening YouTube, Sir.";
-        showResponse(answer);
-        window.open("https://www.youtube.com", "_blank");
-        return;
-    }
-
-    else if (cmd.startsWith("search ")) {
-        const query = cmd.replace("search ", "");
-        answer = "Searching Google for " + query;
-        showResponse(answer);
-
-        window.open(
-            "https://www.google.com/search?q=" +
-            encodeURIComponent(query),
-            "_blank"
-        );
-        return;
-    }
-
-    else if (cmd.includes("stop speaking")) {
-        window.speechSynthesis.cancel();
-        response.innerText = "Voice stopped, Sir.";
-        return;
-    }
-
-    else if (cmd.includes("thank you")) {
-        answer = "You are welcome, Sir.";
-    }
-
-    else {
-        answer = "Sorry Sir, I don't understand that command.";
-    }
-
-    showResponse(answer);
+    throw lastError || new Error("All models failed");
 }
 
-// MOBILE VOICE RECOGNITION
-function startListening() {
+// 5. ASK JARVIS
 
-    const SpeechRecognition =
-        window.SpeechRecognition ||
-        window.webkitSpeechRecognition;
+async function askGemini(message) {
 
-    if (!SpeechRecognition) {
-        showResponse(
-            "Voice recognition is not supported. Please use Chrome on Android."
-        );
-        return;
+    if (isLoading) return;
+
+    isLoading = true;
+    sendBtn.disabled = true;
+
+    const thinking = add(
+        "J.A.R.V.I.S: Processing your request...",
+        "ai"
+    );
+
+    try {
+
+        const reply = await callGemini(message);
+
+        thinking.innerText = "J.A.R.V.I.S: " + reply;
+
+        // Speak AI response
+        speak(reply);
+
+    } catch (error) {
+
+        thinking.innerText =
+            "J.A.R.V.I.S ERROR: " + error.message;
+
+        console.error(error);
+
+    } finally {
+
+        isLoading = false;
+        sendBtn.disabled = false;
+
+        chat.scrollTop = chat.scrollHeight;
+    }
+}
+
+// 6. TEXT MESSAGE SEND
+
+function sendMessage() {
+
+    const message = input.value.trim();
+
+    if (!message || isLoading) return;
+
+    add("YOU: " + message, "user");
+
+    input.value = "";
+
+    askGemini(message);
+}
+
+sendBtn.addEventListener("click", sendMessage);
+
+input.addEventListener("keydown", function(event) {
+
+    if (event.key === "Enter") {
+        sendMessage();
     }
 
-    const recognition = new SpeechRecognition();
+});
+
+// 7. VOICE RECOGNITION
+
+const SpeechRecognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+let recognition = null;
+
+if (SpeechRecognition) {
+
+    recognition = new SpeechRecognition();
 
     recognition.lang = "en-IN";
     recognition.continuous = false;
     recognition.interimResults = false;
 
-    status.innerText = "● LISTENING...";
+    recognition.onstart = function() {
+
+        voiceBtn.innerText = "🔴 LISTENING...";
+        voiceBtn.disabled = true;
+
+    };
 
     recognition.onresult = function(event) {
 
-        const voiceText =
+        const spokenText =
             event.results[0][0].transcript;
 
-        commandInput.value = voiceText;
+        input.value = spokenText;
 
-        runCommand();
+        add("YOU: " + spokenText, "user");
+
+        input.value = "";
+
+        askGemini(spokenText);
+
     };
 
     recognition.onerror = function(event) {
-        response.innerText =
-            "Microphone error: " + event.error;
+
+        add(
+            "VOICE ERROR: " + event.error,
+            "ai"
+        );
+
     };
 
     recognition.onend = function() {
-        status.innerText = "● SYSTEM ONLINE";
+
+        voiceBtn.innerText = "🎤 ACTIVATE VOICE";
+        voiceBtn.disabled = false;
+
     };
 
-    try {
-        recognition.start();
-    } catch (error) {
-        response.innerText = "Please try again.";
-    }
+    voiceBtn.addEventListener("click", function() {
+
+        try {
+            recognition.start();
+        } catch (error) {
+            console.error(error);
+        }
+
+    });
+
+} else {
+
+    voiceBtn.disabled = true;
+    voiceBtn.innerText = "VOICE NOT SUPPORTED";
+
 }
 
-// ENTER BUTTON SUPPORT
-commandInput.addEventListener("keydown", function(event) {
-    if (event.key === "Enter") {
-        runCommand();
-    }
-});
+// 8. TEXT TO SPEECH
 
-console.log("JARVIS MOBILE SYSTEM INITIALIZED");
+let voices = [];
+
+function loadVoices() {
+
+    voices = window.speechSynthesis.getVoices();
+
+}
+
+if ("speechSynthesis" in window) {
+
+    loadVoices();
+
+    speechSynthesis.onvoiceschanged = loadVoices;
+
+}
+
+function speak(text) {
+
+    if (!("speechSynthesis" in window)) return;
+
+    speechSynthesis.cancel();
+
+    const speech =
+        new SpeechSynthesisUtterance(text);
+
+    speech.rate = 1.0;
+    speech.pitch = 0.85;
+    speech.volume = 1;
+
+    const voice = voices.find(v =>
+        v.lang === "en-IN"
+    ) || voices.find(v =>
+        v.lang.startsWith("en")
+    );
+
+    if (voice) {
+        speech.voice = voice;
+    }
+
+    speechSynthesis.speak(speech);
+
+}
+
+// 9. STARTUP MESSAGE
+
+console.log("J.A.R.V.I.S MOBILE SYSTEM READY");
