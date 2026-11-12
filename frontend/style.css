@@ -1,28 +1,270 @@
-@import url('https://fonts.googleapis.com/css2?
-family=Orbitron:wght@400;700&display=swap');
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Orbitron'}
-body{background:#000;color:#0ff;padding:20px}
-header{text-align:center}
-header h1{letter-spacing:6px;text-shadow:0 0 12px #0ff}
-header p{font-size:10px;letter-spacing:4px;opacity:.6}
-.core{position:relative;width:160px;height:160px;margin:25px auto}
-.ring{position:absolute;border:2px solid #0ff;border-radius:50%;box-shadow:0 0 15px #0ff}
-.r1{inset:0;border-top-color:transparent;animation:spin 3s linear infinite}
-.r2{inset:20px;border-bottom-color:transparent;animation:spin 2s linear infinite reverse}
-.center{position:absolute;inset:50px;background:#0ff;border-radius:50%;box-shadow:0 0 
-30px #0ff;animation:pulse 1.5s infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-@keyframes pulse{50%{opacity:.4}}
-.core-text{text-align:center;font-size:11px;letter-spacing:3px}
-.status{border:1px solid rgba(0,255,255,.3);background:rgba(0,255,255,.05);padding:
-12px;margin:20px 0}
-.status h2{font-size:12px;letter-spacing:2px;margin-bottom:8px}
-.row{display:flex;justify-content:space-between;font-size:11px;margin:6px 0}
-.on{color:#0f0}.off{color:#f00}
-.chat{border:1px solid rgba(0,255,255,.3);height:150px;overflow-y:auto;padding:10px;font-
-size:12px}
-.msg{margin:6px 0;padding:6px;border-left:2px solid #0ff;background:rgba(0,255,255,.08)}
-.msg.user{border-left-color:#fff}
-.input-area{display:flex;gap:8px;margin-top:12px}
-input{flex:1;background:#000;border:1px solid #0ff;color:#0ff;padding:10px}
-button{background:#0ff;color:#000;border:none;padding:10px 16px;font-weight:bold}
+/* =================================
+   JARVIS MOBILE AI ASSISTANT
+   FUTURISTIC IRON MAN THEME
+================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    background: radial-gradient(
+        circle at center,
+        #102d46 0%,
+        #061321 45%,
+        #02060d 100%
+    );
+
+    color: #00eaff;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px 15px;
+    overflow-x: hidden;
+}
+
+/* MAIN TITLE */
+
+h1 {
+    font-size: 34px;
+    letter-spacing: 6px;
+    margin-top: 25px;
+    color: #00eaff;
+
+    text-shadow:
+        0 0 10px #00eaff,
+        0 0 25px #00aaff;
+}
+
+/* SUBTITLE */
+
+.subtitle {
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: #8ceeff;
+    margin-top: 10px;
+}
+
+/* ARC REACTOR */
+
+.arc {
+    width: 190px;
+    height: 190px;
+
+    border: 5px solid #00eaff;
+    border-radius: 50%;
+
+    margin: 45px auto 30px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 75px;
+
+    background: radial-gradient(
+        circle,
+        #123b52,
+        #04101d
+    );
+
+    box-shadow:
+        0 0 15px #00eaff,
+        0 0 35px #00aaff,
+        inset 0 0 25px #00eaff;
+
+    animation: reactorGlow 2s infinite alternate;
+}
+
+/* REACTOR ANIMATION */
+
+@keyframes reactorGlow {
+    from {
+        box-shadow:
+            0 0 10px #00eaff,
+            inset 0 0 10px #00eaff;
+    }
+
+    to {
+        box-shadow:
+            0 0 45px #00eaff,
+            0 0 70px #008cff,
+            inset 0 0 35px #00eaff;
+    }
+}
+
+/* STATUS */
+
+#status {
+    color: #00ffb7;
+    font-size: 13px;
+    letter-spacing: 2px;
+    margin-bottom: 25px;
+}
+
+/* INPUT */
+
+input {
+    width: 100%;
+    max-width: 450px;
+
+    padding: 16px;
+
+    border: 1px solid #00eaff;
+    border-radius: 30px;
+
+    background: rgba(5, 25, 43, 0.9);
+
+    color: white;
+    font-size: 16px;
+
+    outline: none;
+
+    box-shadow: 0 0 12px rgba(0, 234, 255, 0.3);
+}
+
+input::placeholder {
+    color: #75b9c8;
+}
+
+input:focus {
+    border-color: #ffffff;
+    box-shadow: 0 0 20px #00eaff;
+}
+
+/* BUTTON CONTAINER */
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+
+    margin-top: 20px;
+}
+
+/* BUTTONS */
+
+button {
+    flex: 1;
+    max-width: 180px;
+
+    padding: 15px 10px;
+
+    border: 1px solid #00eaff;
+    border-radius: 30px;
+
+    background: linear-gradient(
+        135deg,
+        #00eaff,
+        #008cff
+    );
+
+    color: #00111b;
+
+    font-size: 14px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    box-shadow: 0 0 15px rgba(0, 234, 255, 0.5);
+
+    transition: 0.3s;
+}
+
+button:active {
+    transform: scale(0.94);
+    background: white;
+}
+
+/* RESPONSE BOX */
+
+#response {
+    width: 100%;
+    max-width: 450px;
+
+    min-height: 100px;
+
+    margin: 30px auto 0;
+
+    padding: 20px;
+
+    border: 1px solid #008cff;
+    border-radius: 18px;
+
+    background: rgba(5, 23, 40, 0.9);
+
+    color: #ffffff;
+
+    font-size: 15px;
+    line-height: 1.6;
+
+    box-shadow: 0 0 15px rgba(0, 234, 255, 0.2);
+
+    overflow-wrap: anywhere;
+}
+
+/* FOOTER */
+
+.footer {
+    margin-top: 35px;
+
+    color: #5d9bb3;
+
+    font-size: 11px;
+    letter-spacing: 2px;
+}
+
+/* MOBILE RESPONSIVE */
+
+@media screen and (max-width: 480px) {
+
+    body {
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 29px;
+        margin-top: 30px;
+    }
+
+    .arc {
+        width: 165px;
+        height: 165px;
+        font-size: 65px;
+        margin-top: 40px;
+    }
+
+    input {
+        font-size: 15px;
+        padding: 15px;
+    }
+
+    button {
+        font-size: 12px;
+        padding: 14px 5px;
+    }
+
+    #response {
+        font-size: 14px;
+    }
+}
+
+/* SMALL MOBILE */
+
+@media screen and (max-width: 350px) {
+
+    h1 {
+        font-size: 25px;
+    }
+
+    .arc {
+        width: 145px;
+        height: 145px;
+    }
+
+    .buttons {
+        gap: 7px;
+    }
+}
